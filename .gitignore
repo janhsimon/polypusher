@@ -1,0 +1,9 @@
+*.*
+
+!external/**
+!src/**
+
+!.clang-format
+!.gitignore
+!.gitmodules
+!CMakeLists.txt
