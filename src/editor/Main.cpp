@@ -13,6 +13,8 @@ int main()
     return -1;
   }
 
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
   glfwWindowHint(GLFW_RESIZABLE, true);
 
   const auto window = glfwCreateWindow(640, 480, "Hello World", nullptr, nullptr);
@@ -25,10 +27,9 @@ int main()
 
   glfwMakeContextCurrent(window);
 
-  if (!gladLoadGL())
+  if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
   {
-    std::cout << "Failed to initialize OpenGL." << std::endl;
-    glfwTerminate();
+    std::cout << "Failed to initialize OpenGL loader" << std::endl;
     return -1;
   }
 
@@ -38,8 +39,9 @@ int main()
   {
     glClear(GL_COLOR_BUFFER_BIT);
     glfwSwapBuffers(window);
-    glfwPollEvents();
+    glfwWaitEvents();
   }
 
+  glfwDestroyWindow(window);
   glfwTerminate();
 }
