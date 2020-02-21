@@ -1,47 +1,22 @@
-// glad must be included before glfw
-#include <glad/glad.h>
+#include "Window.hpp"
 
-#include <GLFW/glfw3.h>
-
-#include <iostream>
+#include <iostream>  // for cout, endl
+#include <stdexcept> // for runtime_error
 
 int main()
 {
-  if (!glfwInit())
+  try
   {
-    std::cout << "Failed to initialize." << std::endl;
-    return -1;
+    Window window;
+
+    while (!window.shouldClose())
+    {
+      window.swapBuffers();
+    }
   }
-
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-  glfwWindowHint(GLFW_RESIZABLE, true);
-
-  const auto window = glfwCreateWindow(640, 480, "Hello World", nullptr, nullptr);
-  if (!window)
+  catch (const std::runtime_error& error)
   {
-    std::cout << "Failed to create window." << std::endl;
-    glfwTerminate();
-    return -1;
+    std::cout << error.what() << std::endl;
+    return EXIT_FAILURE;
   }
-
-  glfwMakeContextCurrent(window);
-
-  if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
-  {
-    std::cout << "Failed to initialize OpenGL loader" << std::endl;
-    return -1;
-  }
-
-  glClearColor(1.0f, 0.44f, 0.0f, 1.0f);
-
-  while (!glfwWindowShouldClose(window))
-  {
-    glClear(GL_COLOR_BUFFER_BIT);
-    glfwSwapBuffers(window);
-    glfwWaitEvents();
-  }
-
-  glfwDestroyWindow(window);
-  glfwTerminate();
 }
