@@ -9,6 +9,7 @@ public:
   ~Window();
 
   bool shouldClose() const;
+  void waitForEvents() const;
   void swapBuffers() const;
 
 private:
