@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Application.hpp"
-#include "Renderer.hpp"
-#include "Window.hpp"
 
 #include <iostream>  // for cout, endl
 #include <stdexcept> // for runtime_error

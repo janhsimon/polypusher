@@ -1,9 +1,9 @@
 #pragma once
 
-#include <memory> // for unique_ptr
+#include "Renderer.hpp"
+#include "Window.hpp"
 
-class Renderer;
-class Window;
+#include <memory> // for unique_ptr, make_unique
 
 class Application final
 {

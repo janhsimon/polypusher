@@ -1,5 +1,4 @@
 #include "Renderer.hpp"
-#include "Shader.hpp"
 #include "Vertex.hpp"
 
 #include <glad/glad.h>
@@ -10,24 +9,20 @@ Renderer::Renderer()
 {
   glClearColor(1.0f, 0.44f, 0.0f, 1.0f);
 
-  shaderProgram = glCreateProgram();
-
   const std::string vertexShaderSource = "#version 150 core\n"
                                          "attribute vec3 aPos;\n"
                                          "void main()\n"
                                          "{\n"
                                          "  gl_Position = vec4(aPos, 1.0);\n"
                                          "}";
-  Shader vertexShader(vertexShaderSource, shaderProgram, GL_VERTEX_SHADER);
 
   const std::string fragmentShaderSource = "#version 150 core\n"
                                            "void main()\n"
                                            "{\n"
                                            "  gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);\n"
                                            "}";
-  Shader fragmentShader(fragmentShaderSource, shaderProgram, GL_FRAGMENT_SHADER);
 
-  glLinkProgram(shaderProgram);
+  shaderProgram = std::make_unique<ShaderProgram>(vertexShaderSource, fragmentShaderSource);
 
   const std::array<Vertex, 4> vertices = { Vertex(-0.5f, 0.5f, 0.0f), Vertex(0.5f, 0.5f, 0.0f),
                                            Vertex(-0.5f, -0.5f, 0.0f), Vertex(0.5f, -0.5f, 0.0f) };
@@ -49,16 +44,11 @@ Renderer::Renderer()
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 }
 
-Renderer::~Renderer()
-{
-  glDeleteProgram(shaderProgram);
-}
-
 void Renderer::render() const
 {
   glClear(GL_COLOR_BUFFER_BIT);
 
-  glUseProgram(shaderProgram);
+  glUseProgram(shaderProgram->getProgram());
 
   glBindVertexArray(vertexArray);
   glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, nullptr);

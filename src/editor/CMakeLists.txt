@@ -1,7 +1,7 @@
 set(HEADER_FILES
   Application.hpp
   Renderer.hpp
-  Shader.hpp
+  ShaderProgram.hpp
   Vertex.hpp
   Window.hpp
 )
@@ -9,7 +9,7 @@ set(HEADER_FILES
 set(SOURCE_FILES
   Application.cpp
   Renderer.cpp
-  Shader.cpp
+  ShaderProgram.cpp
   Vertex.cpp
   Window.cpp
 )
