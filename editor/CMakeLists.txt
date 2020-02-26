@@ -1,5 +1,6 @@
 set(HEADER_FILES
   src/Application.hpp
+  src/Batch.hpp
   src/Renderer.hpp
   src/ShaderProgram.hpp
   src/Vertex.hpp
@@ -8,6 +9,7 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
   src/Application.cpp
+  src/Batch.cpp
   src/Renderer.cpp
   src/ShaderProgram.cpp
   src/Vertex.cpp

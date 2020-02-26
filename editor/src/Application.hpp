@@ -13,4 +13,7 @@ public:
 private:
   std::unique_ptr<Window> window;
   std::unique_ptr<Renderer> renderer;
+
+  void load();
+  void render();
 };

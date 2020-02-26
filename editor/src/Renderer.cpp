@@ -1,13 +1,13 @@
 #include "Renderer.hpp"
-#include "Vertex.hpp"
+#include "Batch.hpp"
 
 #include <glad/glad.h>
 
-#include <array>
+#include <stdexcept>
 
-Renderer::Renderer()
+Renderer::Renderer(const Batch& batch) : indexCount(0u)
 {
-  glClearColor(1.0f, 0.44f, 0.0f, 1.0f);
+  glClearColor(0.16f, 0.16f, 0.18f, 1.0f);
 
   const std::string vertexShaderSource = "#version 150 core\n"
                                          "attribute vec3 aPos;\n"
@@ -19,13 +19,37 @@ Renderer::Renderer()
   const std::string fragmentShaderSource = "#version 150 core\n"
                                            "void main()\n"
                                            "{\n"
-                                           "  gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);\n"
+                                           "  gl_FragColor = vec4(0.1, 0.1, 0.12, 1.0);\n"
                                            "}";
 
   shaderProgram = std::make_unique<ShaderProgram>(vertexShaderSource, fragmentShaderSource);
 
-  const std::array<Vertex, 4> vertices = { Vertex(-0.5f, 0.5f, 0.0f), Vertex(0.5f, 0.5f, 0.0f),
-                                           Vertex(-0.5f, -0.5f, 0.0f), Vertex(0.5f, -0.5f, 0.0f) };
+  loadVertexBufferFromBatch(batch);
+  loadIndexBufferFromBatch(batch);
+}
+
+void Renderer::render() const
+{
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  if (indexCount == 0u)
+  {
+    return;
+  }
+
+  glUseProgram(shaderProgram->getProgram());
+
+  glBindVertexArray(vertexArray);
+  glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
+
+#ifndef NDEBUG
+  checkForErrors();
+#endif
+}
+
+void Renderer::loadVertexBufferFromBatch(const Batch& batch)
+{
+  const auto vertices = batch.getVertices();
 
   glGenVertexArrays(1, &vertexArray);
   glBindVertexArray(vertexArray);
@@ -36,26 +60,17 @@ Renderer::Renderer()
 
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), 0);
+}
 
-  unsigned int indices[] = { 0, 1, 2, 3 };
+void Renderer::loadIndexBufferFromBatch(const Batch& batch)
+{
+  const auto indices = batch.getIndices();
 
   glGenBuffers(1, &indexBuffer);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-}
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), indices.data(), GL_STATIC_DRAW);
 
-void Renderer::render() const
-{
-  glClear(GL_COLOR_BUFFER_BIT);
-
-  glUseProgram(shaderProgram->getProgram());
-
-  glBindVertexArray(vertexArray);
-  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, nullptr);
-
-#ifndef NDEBUG
-  checkForErrors();
-#endif
+  indexCount = static_cast<unsigned int>(indices.size());
 }
 
 void Renderer::checkForErrors() const
