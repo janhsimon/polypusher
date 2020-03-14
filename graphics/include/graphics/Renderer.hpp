@@ -4,7 +4,6 @@
 #include "Vertex.hpp"
 
 #include <memory> // for unique_ptr, make_unique
-#include <vector>
 
 class Batch;
 
@@ -21,6 +20,7 @@ private:
 
   unsigned int vertexArray, vertexBuffer, indexBuffer;
   unsigned int indexCount;
+  int winSizeUniformLocation;
 
   void loadVertexBufferFromBatch(const Batch& batch);
   void loadIndexBufferFromBatch(const Batch& batch);

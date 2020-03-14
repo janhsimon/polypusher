@@ -1,11 +1,14 @@
-#include "Window.hpp"
+#include "MainWindow.hpp"
+#include "Button.hpp"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h> // for gladLoadGLLoader, GLADloadproc
 
 #include <stdexcept> // for runtime_error
 
-Window::Window()
+std::vector<Button*> MainWindow::buttons;
+
+MainWindow::MainWindow()
 {
   if (!glfwInit())
   {
@@ -29,9 +32,11 @@ Window::Window()
   {
     throw std::runtime_error("Failed to initialize OpenGL.");
   }
+
+  glfwSetCursorPosCallback(window, MainWindow::onMouseMove);
 }
 
-Window::~Window()
+MainWindow::~MainWindow()
 {
   if (window)
   {
@@ -41,17 +46,41 @@ Window::~Window()
   glfwTerminate();
 }
 
-bool Window::shouldClose() const
+GLFWwindow* MainWindow::getGLFWWindow() const
+{
+  return window;
+}
+
+bool MainWindow::shouldClose() const
 {
   return glfwWindowShouldClose(window);
 }
 
-void Window::waitForEvents() const
+void MainWindow::waitForEvents() const
 {
   glfwWaitEvents();
 }
 
-void Window::swapBuffers() const
+void MainWindow::swapBuffers() const
 {
   glfwSwapBuffers(window);
+}
+
+void MainWindow::registerButton(Button* button)
+{
+  buttons.emplace_back(button);
+}
+
+void MainWindow::onMouseMove(GLFWwindow* window, double x, double y)
+{
+  const auto x_ = static_cast<int>(x);
+  const auto y_ = static_cast<int>(y);
+  for (const auto& button : buttons)
+  {
+    if (button->onMouseMove(x_, y_))
+    {
+      // stop processing if the button consumed the event
+      return;
+    }
+  }
 }

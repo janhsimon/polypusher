@@ -1,7 +1,9 @@
 *.*
 
-!external/**
 !editor/**
+!external/**
+!graphics/**
+!interface/**
 
 !.clang-format
 !.gitignore

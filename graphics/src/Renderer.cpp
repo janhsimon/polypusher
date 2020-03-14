@@ -10,19 +10,29 @@ Renderer::Renderer(const Batch& batch) : indexCount(0u)
   glClearColor(0.16f, 0.16f, 0.18f, 1.0f);
 
   const std::string vertexShaderSource = "#version 150 core\n"
-                                         "attribute vec3 aPos;\n"
+                                         "attribute vec3 screenPosition;\n"
+                                         "uniform vec2 winSize;\n"
                                          "void main()\n"
                                          "{\n"
-                                         "  gl_Position = vec4(aPos, 1.0);\n"
+                                         "  vec2 normPosition = screenPosition.xy / winSize; // to [0, 1]\n"
+                                         "  normPosition = normPosition * 2.0 - 1.0; // to [-1, 1]\n"
+                                         "  normPosition.y = -normPosition.y; // flip y\n"
+                                         "  gl_Position = vec4(normPosition, 0.0, 1.0);\n"
                                          "}";
 
   const std::string fragmentShaderSource = "#version 150 core\n"
                                            "void main()\n"
                                            "{\n"
-                                           "  gl_FragColor = vec4(0.1, 0.1, 0.12, 1.0);\n"
+                                           "  gl_FragColor = vec4(0.91, 0.91, 0.912, 1.0);\n"
                                            "}";
 
   shaderProgram = std::make_unique<ShaderProgram>(vertexShaderSource, fragmentShaderSource);
+
+  winSizeUniformLocation = glGetUniformLocation(shaderProgram->getProgram(), "winSize");
+  if (winSizeUniformLocation < 0)
+  {
+    throw std::runtime_error("Failed to retrieve shader uniform location.");
+  }
 
   loadVertexBufferFromBatch(batch);
   loadIndexBufferFromBatch(batch);
@@ -38,6 +48,8 @@ void Renderer::render() const
   }
 
   glUseProgram(shaderProgram->getProgram());
+
+  glUniform2f(winSizeUniformLocation, 640.0f, 480.0f);
 
   glBindVertexArray(vertexArray);
   glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);

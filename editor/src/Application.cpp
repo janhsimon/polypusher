@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Application.hpp"
-#include "Batch.hpp"
+
+#include <graphics/Batch.hpp>
 
 #include <iostream>  // for cout, endl
 #include <stdexcept> // for runtime_error
@@ -10,21 +11,24 @@ Application::Application()
 {
   load();
 
-  while (!window->shouldClose())
+  while (!mainWindow->shouldClose())
   {
-    window->waitForEvents();
+    mainWindow->waitForEvents();
     render();
-    window->swapBuffers();
+    mainWindow->swapBuffers();
   }
 }
 
 void Application::load()
 {
-  window = std::make_unique<Window>();
+  mainWindow = std::make_unique<MainWindow>();
 
   Batch batch;
-  batch.addQuad(-0.9f, -0.9f, -0.75f, -0.75f);
-  batch.addQuad(0.5f, 0.5f, 0.9f, 0.9f);
+
+  button1 = std::make_unique<Button>(batch, 10, 10, 100, 100);
+  button2 = std::make_unique<Button>(batch, 30, 30, 100, 30);
+  mainWindow->registerButton(button1.get());
+  mainWindow->registerButton(button2.get());
 
   renderer = std::make_unique<Renderer>(batch);
 }
